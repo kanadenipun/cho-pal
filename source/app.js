@@ -8,6 +8,6 @@ var Hello = React.createClass({
 });
 
 ReactDOM.render(
-    <Hello name="twitter" />,
+    <div className="jumbotron"><Hello name="twitter" /></div>,
     document.getElementById('react-container')
 );

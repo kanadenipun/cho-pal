@@ -872,9 +872,9 @@
       "./isTextInputElement": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/isTextInputElement.js",
       "./isEventSupported": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/isEventSupported.js",
       "fbjs/lib/ExecutionEnvironment": "/Users/techops/dev/cho-pal/node_modules/fbjs/lib/ExecutionEnvironment.js",
-      "./EventPluginHub": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/EventPluginHub.js",
       "./EventPropagators": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/EventPropagators.js",
       "./SyntheticEvent": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/SyntheticEvent.js",
+      "./EventPluginHub": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/EventPluginHub.js",
       "./inputValueTracking": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/inputValueTracking.js"
     },
     {
@@ -991,8 +991,8 @@
     "/**\n * Copyright (c) 2013-present, Facebook, Inc.\n *\n * This source code is licensed under the MIT license found in the\n * LICENSE file in the root directory of this source tree.\n *\n */\n\n'use strict';\n\nvar EventPropagators = require('./EventPropagators');\nvar ReactDOMComponentTree = require('./ReactDOMComponentTree');\nvar SyntheticMouseEvent = require('./SyntheticMouseEvent');\n\nvar eventTypes = {\n  mouseEnter: {\n    registrationName: 'onMouseEnter',\n    dependencies: ['topMouseOut', 'topMouseOver']\n  },\n  mouseLeave: {\n    registrationName: 'onMouseLeave',\n    dependencies: ['topMouseOut', 'topMouseOver']\n  }\n};\n\nvar EnterLeaveEventPlugin = {\n  eventTypes: eventTypes,\n\n  /**\n   * For almost every interaction we care about, there will be both a top-level\n   * `mouseover` and `mouseout` event that occurs. Only use `mouseout` so that\n   * we do not extract duplicate events. However, moving the mouse into the\n   * browser from outside will not fire a `mouseout` event. In this case, we use\n   * the `mouseover` top-level event.\n   */\n  extractEvents: function (topLevelType, targetInst, nativeEvent, nativeEventTarget) {\n    if (topLevelType === 'topMouseOver' && (nativeEvent.relatedTarget || nativeEvent.fromElement)) {\n      return null;\n    }\n    if (topLevelType !== 'topMouseOut' && topLevelType !== 'topMouseOver') {\n      // Must not be a mouse in or mouse out - ignoring.\n      return null;\n    }\n\n    var win;\n    if (nativeEventTarget.window === nativeEventTarget) {\n      // `nativeEventTarget` is probably a window object.\n      win = nativeEventTarget;\n    } else {\n      // TODO: Figure out why `ownerDocument` is sometimes undefined in IE8.\n      var doc = nativeEventTarget.ownerDocument;\n      if (doc) {\n        win = doc.defaultView || doc.parentWindow;\n      } else {\n        win = window;\n      }\n    }\n\n    var from;\n    var to;\n    if (topLevelType === 'topMouseOut') {\n      from = targetInst;\n      var related = nativeEvent.relatedTarget || nativeEvent.toElement;\n      to = related ? ReactDOMComponentTree.getClosestInstanceFromNode(related) : null;\n    } else {\n      // Moving to a node from outside the window.\n      from = null;\n      to = targetInst;\n    }\n\n    if (from === to) {\n      // Nothing pertains to our managed components.\n      return null;\n    }\n\n    var fromNode = from == null ? win : ReactDOMComponentTree.getNodeFromInstance(from);\n    var toNode = to == null ? win : ReactDOMComponentTree.getNodeFromInstance(to);\n\n    var leave = SyntheticMouseEvent.getPooled(eventTypes.mouseLeave, from, nativeEvent, nativeEventTarget);\n    leave.type = 'mouseleave';\n    leave.target = fromNode;\n    leave.relatedTarget = toNode;\n\n    var enter = SyntheticMouseEvent.getPooled(eventTypes.mouseEnter, to, nativeEvent, nativeEventTarget);\n    enter.type = 'mouseenter';\n    enter.target = toNode;\n    enter.relatedTarget = fromNode;\n\n    EventPropagators.accumulateEnterLeaveDispatches(leave, enter, from, to);\n\n    return [leave, enter];\n  }\n};\n\nmodule.exports = EnterLeaveEventPlugin;",
     {
       "./ReactDOMComponentTree": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/ReactDOMComponentTree.js",
-      "./EventPropagators": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/EventPropagators.js",
-      "./SyntheticMouseEvent": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/SyntheticMouseEvent.js"
+      "./SyntheticMouseEvent": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/SyntheticMouseEvent.js",
+      "./EventPropagators": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/EventPropagators.js"
     },
     {
       "id": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/EnterLeaveEventPlugin.js",
@@ -1235,8 +1235,8 @@
       "fbjs/lib/warning": "/Users/techops/dev/cho-pal/node_modules/fbjs/lib/warning.js",
       "./renderSubtreeIntoContainer": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/renderSubtreeIntoContainer.js",
       "./findDOMNode": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/findDOMNode.js",
-      "./ReactDOMInvalidARIAHook": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/ReactDOMInvalidARIAHook.js",
       "./ReactDOMNullInputValuePropHook": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/ReactDOMNullInputValuePropHook.js",
+      "./ReactDOMInvalidARIAHook": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/ReactDOMInvalidARIAHook.js",
       "./ReactDOMComponentTree": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/ReactDOMComponentTree.js",
       "./ReactUpdates": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/ReactUpdates.js",
       "./ReactDOMUnknownPropertyHook": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/ReactDOMUnknownPropertyHook.js",
@@ -1278,9 +1278,9 @@
       "fbjs/lib/shallowEqual": "/Users/techops/dev/cho-pal/node_modules/fbjs/lib/shallowEqual.js",
       "./AutoFocusUtils": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/AutoFocusUtils.js",
       "./ReactDOMOption": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/ReactDOMOption.js",
+      "./ReactDOMSelect": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/ReactDOMSelect.js",
       "./ReactDOMTextarea": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/ReactDOMTextarea.js",
       "./ReactDOMInput": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/ReactDOMInput.js",
-      "./ReactDOMSelect": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/ReactDOMSelect.js",
       "./DOMPropertyOperations": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/DOMPropertyOperations.js",
       "./ReactServerRenderingTransaction": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/ReactServerRenderingTransaction.js",
       "./CSSPropertyOperations": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/CSSPropertyOperations.js",
@@ -1582,9 +1582,9 @@
       "./SelectEventPlugin": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/SelectEventPlugin.js",
       "./ReactDOMTextComponent": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/ReactDOMTextComponent.js",
       "./ReactEventListener": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/ReactEventListener.js",
-      "./EnterLeaveEventPlugin": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/EnterLeaveEventPlugin.js",
       "./ChangeEventPlugin": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/ChangeEventPlugin.js",
       "./ReactInjection": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/ReactInjection.js",
+      "./EnterLeaveEventPlugin": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/EnterLeaveEventPlugin.js",
       "./BeforeInputEventPlugin": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/BeforeInputEventPlugin.js",
       "./SimpleEventPlugin": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/SimpleEventPlugin.js",
       "./ReactReconcileTransaction": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/ReactReconcileTransaction.js",
@@ -1703,9 +1703,9 @@
       "./ReactUpdates": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/ReactUpdates.js",
       "./ReactEmptyComponent": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/ReactEmptyComponent.js",
       "./ReactHostComponent": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/ReactHostComponent.js",
+      "./EventPluginHub": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/EventPluginHub.js",
       "./EventPluginUtils": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/EventPluginUtils.js",
-      "./ReactComponentEnvironment": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/ReactComponentEnvironment.js",
-      "./EventPluginHub": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/EventPluginHub.js"
+      "./ReactComponentEnvironment": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/ReactComponentEnvironment.js"
     },
     {
       "id": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/ReactInjection.js",
@@ -1795,14 +1795,14 @@
       "fbjs/lib/warning": "/Users/techops/dev/cho-pal/node_modules/fbjs/lib/warning.js",
       "fbjs/lib/emptyObject": "/Users/techops/dev/cho-pal/node_modules/fbjs/lib/emptyObject.js",
       "react/lib/ReactCurrentOwner": "/Users/techops/dev/cho-pal/node_modules/react/lib/ReactCurrentOwner.js",
+      "react/lib/React": "/Users/techops/dev/cho-pal/node_modules/react/lib/React.js",
       "./ReactMarkupChecksum": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/ReactMarkupChecksum.js",
       "./setInnerHTML": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/setInnerHTML.js",
       "./ReactUpdateQueue": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/ReactUpdateQueue.js",
       "./ReactDOMContainerInfo": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/ReactDOMContainerInfo.js",
       "./ReactBrowserEventEmitter": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/ReactBrowserEventEmitter.js",
       "./DOMLazyTree": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/DOMLazyTree.js",
-      "./instantiateReactComponent": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/instantiateReactComponent.js",
-      "react/lib/React": "/Users/techops/dev/cho-pal/node_modules/react/lib/React.js"
+      "./instantiateReactComponent": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/instantiateReactComponent.js"
     },
     {
       "id": "/Users/techops/dev/cho-pal/node_modules/react-dom/lib/ReactMount.js",
@@ -3015,16 +3015,16 @@
     }
   ],
   "/Users/techops/dev/cho-pal/source/app.js": [
-    "'use strict';\n\nvar React = require('react');\nvar ReactDOM = require('react-dom');\n\nvar Hello = React.createClass({\n    displayName: 'Hello',\n\n    render: function render() {\n        return React.createElement(\n            'div',\n            null,\n            'Hello ',\n            this.props.name\n        );\n    }\n});\n\nReactDOM.render(React.createElement(Hello, { name: 'twitter' }), document.getElementById('react-container'));\n",
+    "'use strict';\n\nvar React = require('react');\nvar ReactDOM = require('react-dom');\n\nvar Hello = React.createClass({\n    displayName: 'Hello',\n\n    render: function render() {\n        return React.createElement(\n            'div',\n            null,\n            'Hello ',\n            this.props.name\n        );\n    }\n});\n\nReactDOM.render(React.createElement(\n    'div',\n    { className: 'jumbotron' },\n    React.createElement(Hello, { name: 'twitter' })\n), document.getElementById('react-container'));\n",
     {
-      "react-dom": "/Users/techops/dev/cho-pal/node_modules/react-dom/index.js",
-      "react": "/Users/techops/dev/cho-pal/node_modules/react/react.js"
+      "react": "/Users/techops/dev/cho-pal/node_modules/react/react.js",
+      "react-dom": "/Users/techops/dev/cho-pal/node_modules/react-dom/index.js"
     },
     {
       "id": "/Users/techops/dev/cho-pal/source/app.js",
-      "hash": "cSmJTA",
+      "hash": "EZussg",
       "browserifyId": 184,
-      "sourcemap": "//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImFwcC5qcz92ZXJzaW9uPWNTbUpUQSJdLCJuYW1lcyI6WyJSZWFjdCIsInJlcXVpcmUiLCJSZWFjdERPTSIsIkhlbGxvIiwiY3JlYXRlQ2xhc3MiLCJyZW5kZXIiLCJwcm9wcyIsIm5hbWUiLCJkb2N1bWVudCIsImdldEVsZW1lbnRCeUlkIl0sIm1hcHBpbmdzIjoiOzs7QUFBQSxJQUFJQSxRQUFRQyxRQUFRLE9BQVIsQ0FBWjtBQUNBLElBQUlDLFdBQVdELFFBQVEsV0FBUixDQUFmOztBQUVBLElBQUlFLFFBQVFILE1BQU1JLFdBQU4sQ0FBa0I7QUFBQTs7QUFDMUJDLFlBQVEsa0JBQVk7QUFDaEIsZUFBTztBQUFBO0FBQUE7QUFBQTtBQUFZLGlCQUFLQyxLQUFMLENBQVdDO0FBQXZCLFNBQVA7QUFDSDtBQUh5QixDQUFsQixDQUFaOztBQU1BTCxTQUFTRyxNQUFULENBQ0ksb0JBQUMsS0FBRCxJQUFPLE1BQUssU0FBWixHQURKLEVBRUlHLFNBQVNDLGNBQVQsQ0FBd0IsaUJBQXhCLENBRkoiLCJmaWxlIjoiYXBwLmpzIiwic291cmNlc0NvbnRlbnQiOlsidmFyIFJlYWN0ID0gcmVxdWlyZSgncmVhY3QnKTtcbnZhciBSZWFjdERPTSA9IHJlcXVpcmUoJ3JlYWN0LWRvbScpO1xuXG52YXIgSGVsbG8gPSBSZWFjdC5jcmVhdGVDbGFzcyh7XG4gICAgcmVuZGVyOiBmdW5jdGlvbiAoKSB7XG4gICAgICAgIHJldHVybiA8ZGl2PkhlbGxvIHt0aGlzLnByb3BzLm5hbWV9PC9kaXY+O1xuICAgIH1cbn0pO1xuXG5SZWFjdERPTS5yZW5kZXIoXG4gICAgPEhlbGxvIG5hbWU9XCJ0d2l0dGVyXCIgLz4sXG4gICAgZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ3JlYWN0LWNvbnRhaW5lcicpXG4pO1xuIl19"
+      "sourcemap": "//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImFwcC5qcz92ZXJzaW9uPUVadXNzZyJdLCJuYW1lcyI6WyJSZWFjdCIsInJlcXVpcmUiLCJSZWFjdERPTSIsIkhlbGxvIiwiY3JlYXRlQ2xhc3MiLCJyZW5kZXIiLCJwcm9wcyIsIm5hbWUiLCJkb2N1bWVudCIsImdldEVsZW1lbnRCeUlkIl0sIm1hcHBpbmdzIjoiOzs7QUFBQSxJQUFJQSxRQUFRQyxRQUFRLE9BQVIsQ0FBWjtBQUNBLElBQUlDLFdBQVdELFFBQVEsV0FBUixDQUFmOztBQUVBLElBQUlFLFFBQVFILE1BQU1JLFdBQU4sQ0FBa0I7QUFBQTs7QUFDMUJDLFlBQVEsa0JBQVk7QUFDaEIsZUFBTztBQUFBO0FBQUE7QUFBQTtBQUFZLGlCQUFLQyxLQUFMLENBQVdDO0FBQXZCLFNBQVA7QUFDSDtBQUh5QixDQUFsQixDQUFaOztBQU1BTCxTQUFTRyxNQUFULENBQ0k7QUFBQTtBQUFBLE1BQUssV0FBVSxXQUFmO0FBQTJCLHdCQUFDLEtBQUQsSUFBTyxNQUFLLFNBQVo7QUFBM0IsQ0FESixFQUVJRyxTQUFTQyxjQUFULENBQXdCLGlCQUF4QixDQUZKIiwiZmlsZSI6ImFwcC5qcyIsInNvdXJjZXNDb250ZW50IjpbInZhciBSZWFjdCA9IHJlcXVpcmUoJ3JlYWN0Jyk7XG52YXIgUmVhY3RET00gPSByZXF1aXJlKCdyZWFjdC1kb20nKTtcblxudmFyIEhlbGxvID0gUmVhY3QuY3JlYXRlQ2xhc3Moe1xuICAgIHJlbmRlcjogZnVuY3Rpb24gKCkge1xuICAgICAgICByZXR1cm4gPGRpdj5IZWxsbyB7dGhpcy5wcm9wcy5uYW1lfTwvZGl2PjtcbiAgICB9XG59KTtcblxuUmVhY3RET00ucmVuZGVyKFxuICAgIDxkaXYgY2xhc3NOYW1lPVwianVtYm90cm9uXCI+PEhlbGxvIG5hbWU9XCJ0d2l0dGVyXCIgLz48L2Rpdj4sXG4gICAgZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ3JlYWN0LWNvbnRhaW5lcicpXG4pO1xuIl19"
     }
   ]
 }, [

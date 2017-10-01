@@ -1,13 +1,18 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 
-var Hello = React.createClass({
+
+var ChoPal = React.createClass({
     render: function () {
-        return <div>Hello {this.props.name}</div>;
+        return(
+            <div>
+                Hello
+            </div>
+        )
     }
 });
 
 ReactDOM.render(
-    <div className="jumbotron"><Hello name="twitter" /></div>,
+    <ChoPal/>,
     document.getElementById('react-container')
 );
